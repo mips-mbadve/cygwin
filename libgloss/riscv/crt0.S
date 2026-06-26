@@ -17,11 +17,24 @@
 #=========================================================================
 
 ENTRY(_start)
+
+  .text
+  .global _start
+#ifdef __riscv_software_shadow_stack
+  .attribute software_shadow_stack, 1
+#endif
+  .type   _start, @function
+_start:
   # Initialize global pointer
 .option push
 .option norelax
+#ifdef __riscv_software_shadow_stack
+1:auipc gp, %pcrel_hi(__shadow_stack_base$)
+  addi  gp, gp, %pcrel_lo(1b)
+#else
 1:auipc gp, %pcrel_hi(__global_pointer$)
   addi  gp, gp, %pcrel_lo(1b)
+#endif
 .option pop
 
   /* Initialize jvt CSR (reg addr: 0x0017) */

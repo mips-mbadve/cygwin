@@ -709,6 +709,7 @@ CFLAGS
 CC
 EXTRA_CONFIGARGS_LIBJAVA
 extra_liboffloadmic_configure_flags
+SHADOW_CALL_STACK_FLAGS_FOR_TARGET
 target_subdir
 host_subdir
 build_subdir
@@ -787,6 +788,7 @@ with_system_zlib
 enable_as_accelerator_for
 enable_offload_targets
 enable_gold
+enable_shadow_call_stack
 enable_ld
 enable_compressed_debug_sections
 enable_libquadmath
@@ -1522,6 +1524,9 @@ Optional Features:
                           LIST of TARGET[=DIR]. Use optional path to find
                           offload target compiler during the build
   --enable-gold[=ARG]     build gold [ARG={default,yes,no}]
+  --enable-shadow-call-stack
+                          Enable shadow call stack instrumentation in runtime
+                          libraries, only available in bare metal targets
   --enable-ld[=ARG]       build ld [ARG={default,yes,no}]
   --enable-compressed-debug-sections={all,gas,gold,ld,none}
                           Enable compressed debug sections for gas, gold or ld
@@ -3041,6 +3046,41 @@ case "${ENABLE_GOLD}" in
     as_fn_error $? "invalid --enable-gold argument" "$LINENO" 5
     ;;
 esac
+
+# Check whether --enable-shadow-call-stack was given.
+if test "${enable_shadow_call_stack+set}" = set; then :
+  enableval=$enable_shadow_call_stack; SHADOW_CALL_STACK_FLAG=$enableval
+else
+  SHADOW_CALL_STACK_FLAG=no
+
+fi
+
+
+case "${SHADOW_CALL_STACK_FLAG}" in
+  yes|default)
+    case "${target}" in
+      riscv*-*-elf)
+        ;;
+      *)
+        SHADOW_CALL_STACK_FLAG=""
+        as_fn_error $? "--enable-shadow-call-stack: target not supported: \"${target}\"" "$LINENO" 5
+        ;;
+    esac
+    ;;
+  no)
+    ;;
+  *)
+    as_fn_error $? "invalid --enable-shadow-call-stack argument" "$LINENO" 5
+    ;;
+esac
+
+if test "x$SHADOW_CALL_STACK_FLAG" = xyes; then
+  SHADOW_CALL_STACK_FLAGS_FOR_TARGET="-fsanitize=shadow-call-stack -mno-relax -fno-exceptions"
+else
+  SHADOW_CALL_STACK_FLAGS_FOR_TARGET=""
+fi
+
+
 
 # Check whether --enable-ld was given.
 if test "${enable_ld+set}" = set; then :

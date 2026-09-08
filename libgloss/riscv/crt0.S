@@ -28,7 +28,7 @@ ENTRY(_start)
   # intialize gp to point to base of shadow stack
   # instead of the global pointer
 #ifdef __SANITIZE_SHADOW_CALL_STACK__
-1:auipc gp, %pcrel_hi(__shadow_stack_base$)
+1:auipc gp, %pcrel_hi(__shadow_stack_base)
   addi  gp, gp, %pcrel_lo(1b)
 #else
 1:auipc gp, %pcrel_hi(__global_pointer$)

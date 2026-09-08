@@ -14,6 +14,10 @@
 #if defined(PREFER_SIZE_OVER_SPEED) || defined(__OPTIMIZE_SIZE__)
 ENTRY(memcpy)
 
+#ifdef __SANITIZE_SHADOW_CALL_STACK__
+.attribute software_shadow_stack, 1
+#endif
+
   mv a3, a0
   beqz a2, 2f
 

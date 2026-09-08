@@ -12,6 +12,10 @@
 #include <sys/asm.h>
 #include "newlib.h"
 
+#if defined(__SANITIZE_SHADOW_CALL_STACK__)
+.attribute  software_shadow_stack, 1
+#endif
+
 ENTRY(strcmp)
 
 #if defined(PREFER_SIZE_OVER_SPEED) || defined(__OPTIMIZE_SIZE__)

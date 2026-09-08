@@ -9,6 +9,10 @@
    http://www.opensource.org/licenses.
 */
 
+#if defined(__SANITIZE_SHADOW_CALL_STACK__)
+.attribute software_shadow_stack, 1
+#endif
+
 #include <sys/asm.h>
 
 /* int setjmp (jmp_buf);  */

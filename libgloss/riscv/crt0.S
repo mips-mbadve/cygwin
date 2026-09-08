@@ -15,20 +15,19 @@
 #=========================================================================
 # crt0.S : Entry point for RISC-V user programs
 #=========================================================================
-
-ENTRY(_start)
-
-  .text
-  .global _start
-#ifdef __riscv_software_shadow_stack
+#ifdef __SANITIZE_SHADOW_CALL_STACK__
   .attribute software_shadow_stack, 1
 #endif
-  .type   _start, @function
-_start:
+
+ENTRY(_start)
   # Initialize global pointer
 .option push
 .option norelax
-#ifdef __riscv_software_shadow_stack
+
+  # when software shadow stack is enabled,
+  # intialize gp to point to base of shadow stack
+  # instead of the global pointer
+#ifdef __SANITIZE_SHADOW_CALL_STACK__
 1:auipc gp, %pcrel_hi(__shadow_stack_base$)
   addi  gp, gp, %pcrel_lo(1b)
 #else

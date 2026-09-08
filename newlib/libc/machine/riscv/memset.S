@@ -11,6 +11,9 @@
 
 #include <sys/asm.h>
 
+#ifdef __SANITIZE_SHADOW_CALL_STACK__
+.attribute software_shadow_stack, 1
+#endif
 
 #define BYTE_TBL_SZ   31
 #define WORD_TBL_SZ   32
